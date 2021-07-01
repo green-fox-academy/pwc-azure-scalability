@@ -8,15 +8,10 @@ using System.Threading.Tasks;
 
 namespace ResilienceSimulator.Account
 {
-    public class RetryAccountService : IAccountService
+    public class RetryAccountService : AccountService, IAccountService
     {
-        private readonly ILogger<RetryAccountService> _logger;
-
         public RetryAccountService(
-            ILogger<RetryAccountService> logger)
-        {
-            _logger = logger;
-        }
+            ILogger<RetryAccountService> logger) : base(logger) { }
 
         private AsyncRetryPolicy ResilientStrategy =>
             Policy
@@ -28,14 +23,7 @@ namespace ResilienceSimulator.Account
 
         public async Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
         {
-            return await ResilientStrategy.ExecuteAsync(async (ct) => await GetCurrentBalanceFromBackend(ct), CancellationToken.None);
-        }
-
-        private async Task<long> GetCurrentBalanceFromBackend(CancellationToken cancellationToken = default)
-        {
-            await Task.Delay(15_000, cancellationToken);
-
-            throw new AccountException();
+            return await ResilientStrategy.ExecuteAsync(async (ct) => await GetCurrentBalanceFromBackendAsync(ct), CancellationToken.None);
         }
     }
 }

@@ -35,7 +35,10 @@ namespace ResilienceSimulator
             serviceProvider = new ServiceCollection()
                 .AddLogging(configure =>
                 {
-                    configure.AddConsole();
+                    configure.AddConsole(configure =>
+                    {
+                        configure.TimestampFormat = "[HH:mm:ss.fff] ";
+                    });
                 })
                 .AddSingleton<IAccountService, TimeoutAccountService>()
                 .BuildServiceProvider();

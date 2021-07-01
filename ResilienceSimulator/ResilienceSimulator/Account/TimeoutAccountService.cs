@@ -7,15 +7,10 @@ using System.Threading.Tasks;
 
 namespace ResilienceSimulator.Account
 {
-    public class TimeoutAccountService : IAccountService
+    public class TimeoutAccountService : AccountService, IAccountService
     {
-        private readonly ILogger<TimeoutAccountService> _logger;
-
         public TimeoutAccountService(
-            ILogger<TimeoutAccountService> logger)
-        {
-            _logger = logger;
-        }
+            ILogger<TimeoutAccountService> logger) : base(logger) { }
 
         private AsyncTimeoutPolicy ResilientStrategy =>
             Policy.TimeoutAsync(
@@ -28,16 +23,7 @@ namespace ResilienceSimulator.Account
 
         public async Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Start");
-
-            return await ResilientStrategy.ExecuteAsync(async (ct) => await GetCurrentBalanceFromBackend(ct), CancellationToken.None);
-        }
-
-        private async Task<long> GetCurrentBalanceFromBackend(CancellationToken cancellationToken = default)
-        {
-            await Task.Delay(15_000, cancellationToken);
-
-            throw new AccountException();
+            return await ResilientStrategy.ExecuteAsync(async (ct) => await GetCurrentBalanceFromBackendAsync(ct), CancellationToken.None);
         }
     }
 }
