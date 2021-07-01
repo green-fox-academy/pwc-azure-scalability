@@ -17,14 +17,14 @@ namespace ResilienceSimulator.Account
         {
             var memoryCacheProvider = new MemoryCacheProvider(memoryCache);
 
-            ResilientStrategy = Policy.CacheAsync(memoryCacheProvider, TimeSpan.FromMilliseconds(5));
+            ResilientStrategy = Policy.CacheAsync(memoryCacheProvider, new SlidingTtl(TimeSpan.FromMinutes(5)));
         }
 
         AsyncCachePolicy ResilientStrategy { get; set; }
 
         public async Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
         {
-            return await ResilientStrategy.ExecuteAsync(async (ct) => await GetCurrentBalanceFromBackendAsync(ct), CancellationToken.None);
+            return await ResilientStrategy.ExecuteAsync(async (ctx) => await GetCurrentBalanceFromBackendAsync(), new Context("cacheKey"));
         }
     }
 }
