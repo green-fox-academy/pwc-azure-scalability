@@ -40,7 +40,8 @@ namespace ResilienceSimulator
                         configure.TimestampFormat = "[HH:mm:ss.fff] ";
                     });
                 })
-                .AddSingleton<IAccountService, TimeoutAccountService>()
+                .AddMemoryCache()
+                .AddSingleton<IAccountService, RetryAccountService>()
                 .BuildServiceProvider();
         }
 

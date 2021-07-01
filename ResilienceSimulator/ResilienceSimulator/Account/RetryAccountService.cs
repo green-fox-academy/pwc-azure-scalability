@@ -23,7 +23,7 @@ namespace ResilienceSimulator.Account
 
         public async Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
         {
-            return await ResilientStrategy.ExecuteAsync(async (ct) => await GetCurrentBalanceFromBackendAsync(ct), CancellationToken.None);
+            return await ResilientStrategy.ExecuteAsync(async (ct) => await GetCurrentBalanceFromBackendAsyncThrow(ct), CancellationToken.None);
         }
     }
 }
