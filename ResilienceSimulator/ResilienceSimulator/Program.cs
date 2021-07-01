@@ -1,0 +1,51 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using System;
+using System.Threading.Tasks;
+
+namespace ResilienceSimulator
+{
+    class Program
+    {
+        private static ServiceProvider serviceProvider;
+
+        static async Task Main(string[] args)
+        {
+            Setup();
+
+            var accountService = serviceProvider.GetService<IAccountService>();
+            var logger = serviceProvider.GetService<ILogger<Program>>();
+
+            try
+            {
+                var balance = await accountService.GetCurrentBalanceAsync();
+
+                Console.WriteLine($"Current balance is: {balance}");
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception: {ex.GetType().Name}");
+            }
+        }
+
+        private static void Setup()
+        {
+            //setup our DI
+            serviceProvider = new ServiceCollection()
+                .AddLogging(configure =>
+                {
+                    configure.AddConsole();
+                })
+                .AddSingleton<IAccountService, TimeoutAccountService>()
+                .BuildServiceProvider();
+        }
+
+        private static void Wait()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Press any key to exit ...");
+            Console.ReadKey();
+        }
+    }
+}
