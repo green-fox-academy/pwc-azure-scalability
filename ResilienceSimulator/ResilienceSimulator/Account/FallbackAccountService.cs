@@ -11,10 +11,10 @@ namespace ResilienceSimulator.Account
         public FallbackAccountService(
             ILogger<TimeoutAccountService> logger) : base(logger) { }
 
-        private AsyncFallbackPolicy ResilientStrategy =>
-            Policy
+        private AsyncFallbackPolicy<long> ResilientStrategy =>
+            Policy<long>
             .Handle<AccountException>()
-            .FallbackAsync(async (ct) => await GetCurrentBalanceFallbackAsync(ct));
+            .FallbackAsync<long>(async (ct) => await GetCurrentBalanceFallbackAsync(ct));
 
         public async Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
         {
@@ -23,6 +23,7 @@ namespace ResilienceSimulator.Account
 
         private async Task<long> GetCurrentBalanceFallbackAsync(CancellationToken cancellationToken = default)
         {
+            _logger.LogInformation($"{nameof(GetCurrentBalanceFallbackAsync)} was called");
             return await Task.FromResult(100L);
         }
     }
