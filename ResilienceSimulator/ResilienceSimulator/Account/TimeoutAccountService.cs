@@ -5,31 +5,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ResilienceSimulator
+namespace ResilienceSimulator.Account
 {
-    public interface IAccountService
-    {
-        Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default);
-    }
-
-    public class AccountService : IAccountService
-    {
-        public Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(10_000L);
-        }
-    }
-
-    public class BadAccountService : IAccountService
-    {
-        public async Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
-        {
-            await Task.Delay(15_000, cancellationToken);
-
-            throw new AccountException();
-        }
-    }
-
     public class TimeoutAccountService : IAccountService
     {
         private readonly ILogger<TimeoutAccountService> _logger;
@@ -62,10 +39,5 @@ namespace ResilienceSimulator
 
             throw new AccountException();
         }
-    }
-
-    public class AccountException : Exception
-    {
-
     }
 }
