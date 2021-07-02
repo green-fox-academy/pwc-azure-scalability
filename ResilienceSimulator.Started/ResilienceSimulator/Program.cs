@@ -21,14 +21,6 @@ namespace ResilienceSimulator
             {
                 var balance = await accountService.GetCurrentBalanceAsync();
                 Console.WriteLine($"Current balance is: {balance}");
-
-                // Note: Add back for Cache
-
-                //balance = await accountService.GetCurrentBalanceAsync();
-                //Console.WriteLine($"Current balance is: {balance}");
-
-                //balance = await accountService.GetCurrentBalanceAsync();
-                //Console.WriteLine($"Current balance is: {balance}");
             }
             catch (Exception ex)
             {
@@ -48,7 +40,7 @@ namespace ResilienceSimulator
                     });
                 })
                 .AddMemoryCache()
-                .AddSingleton<IAccountService, FallbackAccountService>()
+                .AddSingleton<IAccountService, NonResilientAccountService>()
                 .BuildServiceProvider();
         }
 
