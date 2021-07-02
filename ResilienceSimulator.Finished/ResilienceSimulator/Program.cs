@@ -48,7 +48,7 @@ namespace ResilienceSimulator
                     });
                 })
                 .AddMemoryCache()
-                .AddSingleton<IAccountService, FallbackAccountService>()
+                .AddSingleton<IAccountService, RetryAccountService>()
                 .BuildServiceProvider();
         }
 

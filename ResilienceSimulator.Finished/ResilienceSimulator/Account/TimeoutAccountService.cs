@@ -15,9 +15,10 @@ namespace ResilienceSimulator.Account
         private AsyncTimeoutPolicy ResilientStrategy =>
             Policy.TimeoutAsync(
                 timeout: TimeSpan.FromSeconds(1),
-                onTimeoutAsync: (c, t, _, e) =>
+                //timeoutStrategy: TimeoutStrategy.Optimistic,
+                onTimeoutAsync: (c, ts, task, e) =>
                 {
-                    _logger.LogInformation($"Timout has occured Exception: {e.GetType().Name}, Timeout: {t.ToString()}");
+                    _logger.LogInformation($"Timout has occured Exception: {e.GetType().Name}, Timeout: {ts.ToString()}");
                     return Task.CompletedTask;
                 });
 

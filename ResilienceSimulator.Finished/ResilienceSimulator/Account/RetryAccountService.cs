@@ -18,8 +18,14 @@ namespace ResilienceSimulator.Account
             .Handle<AccountException>()
             .Or<TimeoutRejectedException>()
             .WaitAndRetryAsync(
-                retryCount: 2,
-                sleepDurationProvider: (tn) => TimeSpan.FromSeconds(1));
+                retryCount: 3,
+                sleepDurationProvider: (tn) => TimeSpan.FromSeconds(Math.Pow(2, tn)),
+                onRetryAsync: (e, ts) =>
+                {
+                    _logger.LogInformation($"Retry: {e.GetType().Name} - {ts.ToString()}");
+
+                    return Task.CompletedTask;
+                });
 
         public async Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
         {

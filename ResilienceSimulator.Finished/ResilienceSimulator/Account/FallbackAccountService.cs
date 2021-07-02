@@ -14,7 +14,14 @@ namespace ResilienceSimulator.Account
         private AsyncFallbackPolicy<long> ResilientStrategy =>
             Policy<long>
             .Handle<AccountException>()
-            .FallbackAsync<long>(async (ct) => await GetCurrentBalanceFallbackAsync(ct));
+            .FallbackAsync<long>(
+                fallbackAction: async (ct) => await GetCurrentBalanceFallbackAsync(ct),
+                onFallbackAsync: (r) =>
+                {
+                    _logger.LogInformation($"Fallback value: {r.Result.ToString()}");
+
+                    return Task.CompletedTask;
+                });
 
         public async Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
         {
