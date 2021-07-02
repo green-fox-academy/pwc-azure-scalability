@@ -17,7 +17,9 @@ namespace ResilienceSimulator.Account
         {
             var memoryCacheProvider = new MemoryCacheProvider(memoryCache);
 
-            ResilientStrategy = Policy.CacheAsync(memoryCacheProvider, new SlidingTtl(TimeSpan.FromMinutes(5)));
+            ResilientStrategy = Policy.CacheAsync(
+                cacheProvider: memoryCacheProvider, 
+                new SlidingTtl(TimeSpan.FromMinutes(5)));
         }
 
         AsyncCachePolicy ResilientStrategy { get; set; }
