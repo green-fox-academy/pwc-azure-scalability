@@ -2,7 +2,10 @@
     ViewData["Title"] = "Home Page";
 }
 
+@model ConfigurationManagement.Controllers.HomeViewModel
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+    <h2 class="display-4">@Model.WelcomeMessage</h2>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
