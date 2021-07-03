@@ -23,14 +23,24 @@ namespace ConfigurationManagement
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureAppConfiguration(config =>
+                    webBuilder.ConfigureAppConfiguration((context, config) =>
                     {
                         config.AddAzureAppConfiguration(appConfigOptions =>
                         {
                             appConfigOptions.Connect(appConfigurationConnectionString);
                             //appConfigOptions.Select(KeyFilter.Any, LabelFilter.Null);
-                            appConfigOptions.Select(KeyFilter.Any, "Stage");
-                        });
+                            appConfigOptions.Select(KeyFilter.Any, "Stage"); //context.HostingEnvironment.EnvironmentName
+                            appConfigOptions.ConfigureRefresh(appConfigRefresherOption =>
+                            {
+                                appConfigRefresherOption.SetCacheExpiration(TimeSpan.FromSeconds(2));
+                                appConfigRefresherOption.Register("PWC:Refresh", true);
+                            });
+                            appConfigOptions.UseFeatureFlags(featureFlagOptions =>
+                            {
+                                //featureFlagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(1);
+                                featureFlagOptions.Select(KeyFilter.Any, LabelFilter.Null);
+                            });
+                        }, false);
                     });
                     webBuilder.UseStartup<Startup>();
                 });

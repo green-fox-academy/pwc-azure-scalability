@@ -1,7 +1,9 @@
 ﻿using ConfigurationManagement.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Logging;
+using Microsoft.FeatureManagement;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,19 +16,31 @@ namespace ConfigurationManagement.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _configuration;
+        //private readonly IConfigurationRefresher _configurationRefresher;
+        private readonly IFeatureManager _featureManager;
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
+        public HomeController(
+            ILogger<HomeController> logger,
+            IConfiguration configuration,
+            //IConfigurationRefresher configurationRefresher,
+            IFeatureManager featureManager)
         {
             _logger = logger;
             _configuration = configuration;
+            //_configurationRefresher = configurationRefresher;
+            _featureManager = featureManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            //await _configurationRefresher.RefreshAsync();
+            var isExtraMessage = await _featureManager.IsEnabledAsync("IsExtraMessage");
+
             return View(
                 new HomeViewModel
                 {
-                    WelcomeMessage = _configuration["PWC:Message"]
+                    WelcomeMessage = _configuration["PWC:Message"],
+                    IsExtraMessage = isExtraMessage
                 });
         }
 
