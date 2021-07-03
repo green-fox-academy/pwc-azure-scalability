@@ -35,12 +35,14 @@ namespace ConfigurationManagement.Controllers
         {
             //await _configurationRefresher.RefreshAsync();
             var isExtraMessage = await _featureManager.IsEnabledAsync("IsExtraMessage");
+            var isSuperExtraMessage = await _featureManager.IsEnabledAsync("IsSuperExtraMessage");
 
             return View(
                 new HomeViewModel
                 {
                     WelcomeMessage = _configuration["PWC:Message"],
-                    IsExtraMessage = isExtraMessage
+                    IsExtraMessage = isExtraMessage,
+                    IsSuperExtraMessage = isSuperExtraMessage,
                 });
         }
 

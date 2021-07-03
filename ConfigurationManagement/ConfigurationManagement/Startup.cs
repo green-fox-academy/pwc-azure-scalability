@@ -9,7 +9,6 @@ using Microsoft.FeatureManagement.FeatureFilters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ConfigurationManagement
 {
@@ -28,8 +27,10 @@ namespace ConfigurationManagement
 
             services.AddControllersWithViews();
             services.AddAzureAppConfiguration();
-            services.AddFeatureManagement();
-                //.AddFeatureFilter<TargetingFilter>();
+
+            services.AddHttpContextAccessor();
+            services.AddFeatureManagement()
+                .AddFeatureFilter<UserCountryFilter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

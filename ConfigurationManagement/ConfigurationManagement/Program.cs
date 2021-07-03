@@ -41,16 +41,16 @@ namespace ConfigurationManagement
 
                             _refresher = appConfigOptions.GetRefresher();
 
-                            //RegisterRefreshEventHandler();
+                            RegisterRefreshEventHandler();
 
                             appConfigOptions.ConfigureRefresh(appConfigRefresherOption =>
                             {
-                                appConfigRefresherOption.SetCacheExpiration(TimeSpan.FromSeconds(2));
+                                appConfigRefresherOption.SetCacheExpiration(TimeSpan.FromSeconds(600));
                                 appConfigRefresherOption.Register("PWC:Refresh", true);
                             });
                             appConfigOptions.UseFeatureFlags(featureFlagOptions =>
                             {
-                                featureFlagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(1);
+                                featureFlagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(600);
                                 featureFlagOptions.Select(KeyFilter.Any, LabelFilter.Null);
                             });
                         }, false);
