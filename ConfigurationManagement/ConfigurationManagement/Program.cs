@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,9 +23,14 @@ namespace ConfigurationManagement
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureAppConfiguration(config => 
+                    webBuilder.ConfigureAppConfiguration(config =>
                     {
-                        config.AddAzureAppConfiguration(appConfigurationConnectionString);
+                        config.AddAzureAppConfiguration(appConfigOptions =>
+                        {
+                            appConfigOptions.Connect(appConfigurationConnectionString);
+                            //appConfigOptions.Select(KeyFilter.Any, LabelFilter.Null);
+                            appConfigOptions.Select(KeyFilter.Any, "Stage");
+                        });
                     });
                     webBuilder.UseStartup<Startup>();
                 });
