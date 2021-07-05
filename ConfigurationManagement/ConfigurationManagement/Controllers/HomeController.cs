@@ -36,6 +36,7 @@ namespace ConfigurationManagement.Controllers
             //await _configurationRefresher.RefreshAsync();
             var isExtraMessage = await _featureManager.IsEnabledAsync("IsExtraMessage");
             var isSuperExtraMessage = await _featureManager.IsEnabledAsync("IsSuperExtraMessage");
+            var secretValue = _configuration["Secret"];
 
             return View(
                 new HomeViewModel

@@ -1,3 +1,5 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -21,6 +23,7 @@ namespace ConfigurationManagement
 
         private static IConfigurationRefresher _refresher = null;
         private static Timer _refresherTimer;
+        private static Uri nwe;
 
         public static void Main(string[] args)
         {
@@ -42,6 +45,13 @@ namespace ConfigurationManagement
                             _refresher = appConfigOptions.GetRefresher();
 
                             RegisterRefreshEventHandler();
+
+                            //appConfigOptions.ConfigureKeyVault(kv =>
+                            // {
+
+                            //     var secretClient = new SecretClient(new Uri("https://kv-gf-pow.vault.azure.net/"), new DefaultAzureCredential());
+                            //     kv.Register(secretClient);
+                            // });
 
                             appConfigOptions.ConfigureRefresh(appConfigRefresherOption =>
                             {
