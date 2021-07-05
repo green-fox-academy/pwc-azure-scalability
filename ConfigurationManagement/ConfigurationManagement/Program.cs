@@ -23,7 +23,6 @@ namespace ConfigurationManagement
 
         private static IConfigurationRefresher _refresher = null;
         private static Timer _refresherTimer;
-        private static Uri nwe;
 
         public static void Main(string[] args)
         {
