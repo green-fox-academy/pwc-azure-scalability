@@ -20,20 +20,22 @@ namespace ResilienceSimulator
 
             try
             {
-                var balance = await accountService.GetCurrentBalanceAsync();
-                Console.WriteLine($"Current balance is: {balance}");
-
-                // Note: Add back for Cache
-
-                //balance = await accountService.GetCurrentBalanceAsync();
-                //Console.WriteLine($"Current balance is: {balance}");
-
-                //balance = await accountService.GetCurrentBalanceAsync();
-                //Console.WriteLine($"Current balance is: {balance}"); 
+                for (int i = 0; i < 4; i++)
+                {
+                    try
+                    {
+                        var balance = await accountService.GetCurrentBalanceAsync();
+                        Console.WriteLine($"Current balance is: {balance}");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError($"#{i}  Exception: {ex.GetType().Name}");
+                    }
+                }
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception: {ex.GetType().Name}");
+                logger.LogError($"Exception: {ex.GetType().Name}");
             }
         }
 
@@ -49,7 +51,7 @@ namespace ResilienceSimulator
                     });
                 })
                 .AddMemoryCache()
-                .AddSingleton<IAccountService, TimeoutAccountService>()
+                .AddSingleton<IAccountService, CircuitBreakerAccountService>()
                 .BuildServiceProvider();
         }
 

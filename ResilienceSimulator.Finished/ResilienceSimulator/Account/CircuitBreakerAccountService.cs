@@ -35,7 +35,7 @@ namespace ResilienceSimulator.Account
             .Or<BrokenCircuitException>()
             .Or<TimeoutRejectedException>()
             .WaitAndRetryAsync(
-                retryCount: 10,
+                retryCount: 0,
                 sleepDurationProvider: (tn) => TimeSpan.FromMilliseconds(200),
                 onRetryAsync: (e, ts) =>
                 {
@@ -48,7 +48,7 @@ namespace ResilienceSimulator.Account
 
         public async Task<long> GetCurrentBalanceAsync(CancellationToken cancellationToken = default)
         {
-            return await ResilientStrategy.ExecuteAsync(async (ct) => await GetCurrentBalanceFromBackendAsyncThrow(ct), CancellationToken.None);
+            return await ResilientStrategy.ExecuteAsync(async (ct) => await GetCurrentBalanceFromBackendAsyncThrow(ct), cancellationToken);
         }
     }
 }
