@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="coverlet.collector" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\Common\Common.csproj" />
+    <ProjectReference Include="..\..\Source\External.Api\External.Api.csproj" />
+    <ProjectReference Include="..\..\Source\InvoiceProcessor.Api\InvoiceProcessor.Api.csproj" />
+    <ProjectReference Include="..\..\Source\InvoiceProcessor.Functions\InvoiceProcessor.Functions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestFiles\**" CopyToOutputDirectory="Always" />
+    <None Update="TestFiles\**" CopyToOutputDirectory="Always" />
+    <Content Include="..\..\Source\Common\Transformations\*.xslt">
+      <Link>TestFiles\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
