@@ -333,13 +333,3 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
-/.sonarqube/cxx-lint
-
-# Health check related files.
-liveness
-readiness
-/Source/OData/WOM.OData.Api/.config
-/Source/WOM.OData.Api/WOM.OData.Api
-/Source/WOM.Services.Api/epanet-workspace
-*.pbix
-**/workspace.lock
