@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
-using Common.Core;
 using FluentAssertions;
+using InvoiceProcessor.Common.Core;
 using Xunit;
 
-namespace L0.Tests
+namespace InvoiceProcessor.L0.Tests
 {
     public class InvoicePlayloadSerializationTests
     {
@@ -17,14 +18,14 @@ namespace L0.Tests
             _sampleXml = File.ReadAllText("./TestFiles/CoreInvoicesSample.xml");
             _invoicePayload = new Root
             {
-                Invoices = new List<Invoice>
+                Invoices = new[]
                 {
                     new Invoice
                     {
                         ContactName = "Contact",
                         InvoiceNumber = "#111",
                         TotalAmount = 100,
-                        LineItems = new List<InvoiceLineItem>
+                        LineItems = new[]
                         {
                             new InvoiceLineItem
                             {
@@ -45,7 +46,7 @@ namespace L0.Tests
                         ContactName = "Contact",
                         InvoiceNumber = "#222",
                         TotalAmount = 100,
-                        LineItems = new List<InvoiceLineItem>
+                        LineItems = new[]
                         {
                             new InvoiceLineItem
                             {
@@ -82,16 +83,22 @@ namespace L0.Tests
         private static string SerializeToXml(object model)
         {
             using var writer = new StringWriter();
+            using var xmlWriter = XmlWriter.Create(writer, new XmlWriterSettings
+            {
+                OmitXmlDeclaration = true,
+                Indent = true
+            });
             var serializer = new XmlSerializer(model.GetType());
-            serializer.Serialize(writer, model);
+            serializer.Serialize(xmlWriter, model);
             return writer.ToString();
         }
 
         private static TType DeserializeFromXml<TType>(string xml)
         {
             using var stringReader = new StringReader(xml);
+            using var xmlReader = XmlReader.Create(stringReader);
             var serializer = new XmlSerializer(typeof(TType));
-            return (TType)serializer.Deserialize(stringReader);
+            return (TType)serializer.Deserialize(xmlReader);
         }
     }
 }

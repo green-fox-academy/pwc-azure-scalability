@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace External.Api.Controllers
+namespace InvoiceProcessor.FakeExternalService.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -22,7 +22,7 @@ namespace External.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetInvoiceStatus()
+        public IActionResult GetInvoiceStatus(Guid id)
         {
             throw new NotImplementedException();
         }

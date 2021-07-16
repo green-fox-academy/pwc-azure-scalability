@@ -1,4 +1,10 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using InvoiceProcessor.Api.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -9,16 +15,37 @@ namespace InvoiceProcessor.Api.Controllers
     public class InvoicesController : ControllerBase
     {
         private readonly ILogger<InvoicesController> _logger;
+        private readonly IStorageService _storageService;
 
-        public InvoicesController(ILogger<InvoicesController> logger)
+        public InvoicesController(ILogger<InvoicesController> logger, IStorageService storageService)
         {
             _logger = logger;
+            _storageService = storageService;
         }
 
         [HttpPost]
-        public IActionResult ProcessInvoices()
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<Guid>> ProcessInvoices([Required] IFormFile importFile, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (importFile is null)
+            {
+                throw new ArgumentNullException(nameof(importFile));
+            }
+
+            if (!string.Equals(Path.GetExtension(importFile.ContentType), "text/xml", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest($"Invalid ContentType. ContentType should be 'text/xml'. ContentType:{importFile.ContentType}");
+            }
+
+            if (!string.Equals(Path.GetExtension(importFile.FileName), ".xml", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest($"Invalid FileName. File should be xml. FileName:{importFile.FileName}");
+            }
+
+            var id = Guid.NewGuid();
+            using var fileStream = importFile.OpenReadStream();
+            await _storageService.UploadAsync(fileStream, "customer-payloads", id.ToString(), cancellationToken);
+            return id;
         }
     }
 }

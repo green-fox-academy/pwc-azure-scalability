@@ -1,9 +1,9 @@
 ﻿using System.IO;
-using Common.Transformations;
 using FluentAssertions;
+using InvoiceProcessor.Common.Transformations;
 using Xunit;
 
-namespace L0.Tests
+namespace InvoiceProcessor.L0.Tests
 {
     public class XsltTransformationServiceTests
     {

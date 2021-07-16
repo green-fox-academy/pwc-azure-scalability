@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Common.Core
+namespace InvoiceProcessor.Common.Core
 {
     public class Invoice
     {
@@ -16,6 +16,6 @@ namespace Common.Core
 
         [XmlArray(nameof(LineItems))]
         [XmlArrayItem(nameof(InvoiceLineItem), Type = typeof(InvoiceLineItem))]
-        public List<InvoiceLineItem> LineItems { get; set; }
+        public InvoiceLineItem[] LineItems { get; set; }
     }
 }

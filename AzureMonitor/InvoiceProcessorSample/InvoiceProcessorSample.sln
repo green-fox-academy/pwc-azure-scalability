@@ -9,13 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvoiceProcessor.Api", "Sou
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvoiceProcessor.Functions", "Source\InvoiceProcessor.Functions\InvoiceProcessor.Functions.csproj", "{DCDBE5B1-7D5B-413A-9E45-1CF21EFD52C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.Api", "Source\External.Api\External.Api.csproj", "{CFEB9256-9A00-4623-8B37-41D2355F38E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvoiceProcessor.FakeExternalService.Api", "Source\InvoiceProcessor.FakeExternalService.Api\InvoiceProcessor.FakeExternalService.Api.csproj", "{CFEB9256-9A00-4623-8B37-41D2355F38E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Source\Common\Common.csproj", "{01E9471A-3ADB-474F-89E5-831823A80833}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvoiceProcessor.Common", "Source\InvoiceProcessor.Common\InvoiceProcessor.Common.csproj", "{01E9471A-3ADB-474F-89E5-831823A80833}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{F9F22864-D9AB-464E-BE2A-05AC9E36ED7A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L0.Tests", "Test\L0.Tests\L0.Tests.csproj", "{CB809844-CF0D-4EDE-BC67-30B1957822E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvoiceProcessor.L0.Tests", "Test\InvoiceProcessor.L0.Tests\InvoiceProcessor.L0.Tests.csproj", "{CB809844-CF0D-4EDE-BC67-30B1957822E0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{437FB1B1-2B85-4322-BD0B-E90AC6151346}"
 	ProjectSection(SolutionItems) = preProject

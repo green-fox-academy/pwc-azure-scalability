@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace Common.Core
+namespace InvoiceProcessor.Common.Core
 {
     public class InvoiceLineItem
     {

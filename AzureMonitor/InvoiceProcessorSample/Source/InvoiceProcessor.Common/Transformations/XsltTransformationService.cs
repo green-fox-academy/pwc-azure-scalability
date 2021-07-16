@@ -3,7 +3,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Xsl;
 
-namespace Common.Transformations
+namespace InvoiceProcessor.Common.Transformations
 {
     public class XsltTransformationService
     {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\Common\Common.csproj" />
-    <ProjectReference Include="..\..\Source\External.Api\External.Api.csproj" />
     <ProjectReference Include="..\..\Source\InvoiceProcessor.Api\InvoiceProcessor.Api.csproj" />
+    <ProjectReference Include="..\..\Source\InvoiceProcessor.Common\InvoiceProcessor.Common.csproj" />
+    <ProjectReference Include="..\..\Source\InvoiceProcessor.FakeExternalService.Api\InvoiceProcessor.FakeExternalService.Api.csproj" />
     <ProjectReference Include="..\..\Source\InvoiceProcessor.Functions\InvoiceProcessor.Functions.csproj" />
   </ItemGroup>
 
