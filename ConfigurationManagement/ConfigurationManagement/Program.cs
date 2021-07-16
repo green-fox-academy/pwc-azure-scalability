@@ -1,3 +1,5 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -42,6 +44,13 @@ namespace ConfigurationManagement
                             _refresher = appConfigOptions.GetRefresher();
 
                             RegisterRefreshEventHandler();
+
+                            //appConfigOptions.ConfigureKeyVault(kv =>
+                            // {
+
+                            //     var secretClient = new SecretClient(new Uri("https://kv-gf-pow.vault.azure.net/"), new DefaultAzureCredential());
+                            //     kv.Register(secretClient);
+                            // });
 
                             appConfigOptions.ConfigureRefresh(appConfigRefresherOption =>
                             {

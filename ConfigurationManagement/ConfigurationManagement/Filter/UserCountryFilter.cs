@@ -1,7 +1,7 @@
 ﻿using Microsoft.FeatureManagement;
 using System.Threading.Tasks;
 
-namespace ConfigurationManagement
+namespace ConfigurationManagement.Filter
 {
     [FilterAlias("UserCountry")]
     public class UserCountryFilter : IFeatureFilter

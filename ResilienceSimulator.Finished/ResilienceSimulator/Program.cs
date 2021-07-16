@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using ResilienceSimulator.Account;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ResilienceSimulator
@@ -28,7 +29,7 @@ namespace ResilienceSimulator
                 //Console.WriteLine($"Current balance is: {balance}");
 
                 //balance = await accountService.GetCurrentBalanceAsync();
-                //Console.WriteLine($"Current balance is: {balance}");
+                //Console.WriteLine($"Current balance is: {balance}"); 
             }
             catch (Exception ex)
             {
@@ -48,7 +49,7 @@ namespace ResilienceSimulator
                     });
                 })
                 .AddMemoryCache()
-                .AddSingleton<IAccountService, CircuitBreakerAccountService>()
+                .AddSingleton<IAccountService, TimeoutAccountService>()
                 .BuildServiceProvider();
         }
 
