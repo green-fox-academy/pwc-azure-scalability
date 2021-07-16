@@ -24,7 +24,7 @@
     Name
       UnitAmount
       Quantity  		
-  - validation
+- validation
 - store (table, blob, sql)
 - sendInvoices
   - schedule, ethernal orchestration
