@@ -8,12 +8,12 @@ using Xunit;
 
 namespace InvoiceProcessor.L0.Tests
 {
-    public class InvoicePlayloadSerializationTests
+    public class InvoicePayloadSerializationTests
     {
         private readonly Root _invoicePayload;
         private readonly string _sampleXml;
 
-        public InvoicePlayloadSerializationTests()
+        public InvoicePayloadSerializationTests()
         {
             _sampleXml = File.ReadAllText("./TestFiles/CoreInvoicesSample.xml");
             _invoicePayload = new Root
@@ -67,14 +67,14 @@ namespace InvoiceProcessor.L0.Tests
         }
 
         [Fact]
-        public void TestInvoicePlayloadSerialization()
+        public void TestInvoicePayloadSerialization()
         {
             var xml = SerializeToXml(_invoicePayload);
             xml.Should().Be(_sampleXml);
         }
 
         [Fact]
-        public void TestInvoicePlayloadDeserialization()
+        public void TestInvoicePayloadDeserialization()
         {
             var invoicePayload = DeserializeFromXml<Root>(_sampleXml);
             invoicePayload.Should().BeEquivalentTo(_invoicePayload);
