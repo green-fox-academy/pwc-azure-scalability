@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace InvoiceProcessor.Api.Services
 {
@@ -20,11 +24,11 @@ namespace InvoiceProcessor.Api.Services
             _logger = logger;
         }
 
-        public async Task UploadAsync(Stream content, string containerName, string path, CancellationToken cancellationToken)
+        public async Task UploadAsync(IFormFile file, string containerName, string path, CancellationToken cancellationToken)
         {
-            if (content is null)
+            if (file is null)
             {
-                throw new ArgumentNullException(nameof(content));
+                throw new ArgumentNullException(nameof(file));
             }
 
             if (string.IsNullOrEmpty(containerName))
@@ -43,12 +47,39 @@ namespace InvoiceProcessor.Api.Services
                 ["Path"] = path
             }))
             {
+                using var content = file.OpenReadStream();
                 var blobServiceClient = new BlobServiceClient(_azureStorageConnectionString);
-                var containerClient = (await blobServiceClient.CreateBlobContainerAsync(containerName, cancellationToken: cancellationToken)).Value;
-                var blobClient = containerClient.GetBlobClient(path);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                var handleContainerNotExistsPolicy = Policy
+                    .Handle<RequestFailedException>(e => e.ErrorCode == BlobErrorCode.ContainerNotFound)
+                    .RetryAsync(1, async (e, count) =>
+                    {
+                        _logger.LogDebug("Container not found. Creating container");
+                        await containerClient.CreateIfNotExistsAsync();
+                        _logger.LogDebug("Container created");
+
+                        content.Position = 0;
+                    });
 
                 _logger.LogDebug("Uploading file to blob storage");
-                await blobClient.UploadAsync(content, cancellationToken);
+
+                var blobClient = containerClient.GetBlobClient(path);
+                await handleContainerNotExistsPolicy.ExecuteAsync(async () =>
+                {
+                    await blobClient.UploadAsync(
+                        content,
+                        new BlobHttpHeaders
+                        {
+                            ContentType = file.ContentType,
+                            ContentDisposition = file.ContentDisposition,
+                        },
+                        metadata: new Dictionary<string, string>
+                        {
+                            { "Customer", "Customer1" }
+                        },
+                        cancellationToken: cancellationToken);
+                });
+
                 _logger.LogDebug("Upload completed");
             }
         }

@@ -32,7 +32,7 @@ namespace InvoiceProcessor.Api.Controllers
                 throw new ArgumentNullException(nameof(importFile));
             }
 
-            if (!string.Equals(Path.GetExtension(importFile.ContentType), "text/xml", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(importFile.ContentType, "text/xml", StringComparison.OrdinalIgnoreCase))
             {
                 return BadRequest($"Invalid ContentType. ContentType should be 'text/xml'. ContentType:{importFile.ContentType}");
             }
@@ -43,9 +43,12 @@ namespace InvoiceProcessor.Api.Controllers
             }
 
             var id = Guid.NewGuid();
-            using var fileStream = importFile.OpenReadStream();
-            await _storageService.UploadAsync(fileStream, "customer-payloads", id.ToString(), cancellationToken);
-            return id;
+            _logger.LogDebug("Processing invoices. InvoiceId:{InvoiceId}", id);
+            using (_logger.BeginScope("{InvoiceId}", id))
+            {
+                await _storageService.UploadAsync(importFile, "customer-payloads", $"{id}.xml", cancellationToken);
+                return id;
+            }
         }
     }
 }
