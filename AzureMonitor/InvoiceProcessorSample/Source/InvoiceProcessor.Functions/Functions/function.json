@@ -1,0 +1,12 @@
+{
+  "bindings": [
+    {
+      "name": "customerPayloadBlobClient",
+      "type": "blob",
+      "path": "customer-payloads/{name}",
+      "connection": "AzureWebJobsStorage",
+      "direction": "inout"
+    }
+  ],
+  "disabled": false
+}
