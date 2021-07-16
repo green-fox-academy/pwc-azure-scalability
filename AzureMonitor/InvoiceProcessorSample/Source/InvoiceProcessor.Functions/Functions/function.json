@@ -1,7 +1,7 @@
 {
   "bindings": [
     {
-      "name": "customerPayloadBlobClient",
+      "name": "customerPayloadCloudBlock",
       "type": "blob",
       "path": "customer-payloads/{name}",
       "connection": "AzureWebJobsStorage",

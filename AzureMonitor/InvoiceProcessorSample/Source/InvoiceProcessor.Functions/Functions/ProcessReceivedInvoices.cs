@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using InvoiceProcessor.Common.Transformations;
+using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -23,21 +24,21 @@ namespace InvoiceProcessor.Functions.Functions
         [FunctionName("ProcessReceivedInvoices")]
         public async Task Run(
             [BlobTrigger("customer-payloads/{name}", Connection = "AzureWebJobsStorage")]
-            BlobClient customerPayloadBlobClient,
+            CloudBlockBlob customerPayloadCloudBlock,
             [Blob("transformed-payloads/{name}", FileAccess.ReadWrite)]
-            BlobClient targetBlobClient,
+            CloudBlockBlob transformedPayloadCloudBlock,
             string name,
             ILogger logger,
             CancellationToken cancellationToken)
         {
-            if (customerPayloadBlobClient is null)
+            if (customerPayloadCloudBlock is null)
             {
-                throw new ArgumentNullException(nameof(customerPayloadBlobClient));
+                throw new ArgumentNullException(nameof(customerPayloadCloudBlock));
             }
 
-            if (targetBlobClient is null)
+            if (transformedPayloadCloudBlock is null)
             {
-                throw new ArgumentNullException(nameof(targetBlobClient));
+                throw new ArgumentNullException(nameof(transformedPayloadCloudBlock));
             }
 
             if (string.IsNullOrEmpty(name))
@@ -50,30 +51,23 @@ namespace InvoiceProcessor.Functions.Functions
                 throw new ArgumentNullException(nameof(logger));
             }
 
-            var properties = (await customerPayloadBlobClient.GetPropertiesAsync(cancellationToken: cancellationToken)).Value;
-            properties.Metadata.TryGetValue("Customer", out var customer);
+            customerPayloadCloudBlock.Metadata.TryGetValue("Customer", out var customer);
+            logger.LogDebug("ProcessReceivedInvoices triggered for blob. Name:{Name}, Size:{Size}, Customer:{Customer} bytes", name, customerPayloadCloudBlock.Properties.Length, customer);
 
-            logger.LogDebug("ProcessReceivedInvoices triggered for blob. Name:{Name}, Size:{Size}, Customer:{Customer} bytes", name, properties.ContentLength, customer);
-
-            using (var memoryStream = new MemoryStream())
+            using (var targetMemoryStream = new MemoryStream())
             {
-                using (var downloadStream = (await customerPayloadBlobClient.DownloadStreamingAsync(cancellationToken: cancellationToken)).Value.Content)
+                using (var downloadStream = new MemoryStream())
                 {
-                    _xslTransformationService.TransformClient1XmlToCoreXml(downloadStream, memoryStream);
+                    await customerPayloadCloudBlock.DownloadToStreamAsync(downloadStream, cancellationToken: cancellationToken);
+                    downloadStream.Position = 0;
+
+                    _xslTransformationService.TransformClient1XmlToCoreXml(downloadStream, targetMemoryStream);
                 }
 
                 logger.LogDebug("Uploading transformed xml to blob storage");
-                await targetBlobClient.UploadAsync(
-                    memoryStream,
-                    new BlobHttpHeaders
-                    {
-                        ContentType = "text/xml"
-                    },
-                    metadata: new Dictionary<string, string>
-                    {
-                        { "Customer", customer }
-                    },
-                    cancellationToken: cancellationToken);
+                transformedPayloadCloudBlock.Properties.ContentType = "text/xml";
+                transformedPayloadCloudBlock.Metadata["Customer"] = customer;
+                await transformedPayloadCloudBlock.UploadFromStreamAsync(targetMemoryStream, cancellationToken: cancellationToken);
             }
 
             logger.LogDebug("Upload completed");
