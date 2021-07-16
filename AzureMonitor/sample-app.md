@@ -9,7 +9,7 @@
 - Manage durable function
   - list workflows
   - (kill workflow)
-- (start workflow)
+  - (start workflow)
   
 ### Azure Function
 - invoicesReceived
