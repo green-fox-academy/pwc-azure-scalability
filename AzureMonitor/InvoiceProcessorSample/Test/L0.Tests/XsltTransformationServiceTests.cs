@@ -1,6 +1,6 @@
-﻿using Common.Transformations;
+﻿using System.IO;
+using Common.Transformations;
 using FluentAssertions;
-using System.IO;
 using Xunit;
 
 namespace L0.Tests

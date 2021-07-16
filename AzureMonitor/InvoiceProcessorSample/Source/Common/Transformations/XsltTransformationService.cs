@@ -11,21 +11,21 @@ namespace Common.Transformations
         {
             var xslt = GetResource("Client1Transformation.xslt");
 
-            var myXslTrans = new XslCompiledTransform();
+            var xslCompiledTransform = new XslCompiledTransform();
             using (var stringReader = new StringReader(xslt))
             {
                 using var xmlReader = XmlReader.Create(stringReader);
-                myXslTrans.Load(xmlReader);
+                xslCompiledTransform.Load(xmlReader);
             }
-            
+
             using var writer = new StringWriter();
             using var xmlWriter = XmlWriter.Create(writer, new XmlWriterSettings { OmitXmlDeclaration = true });
             using (var stringReader = new StringReader(sourceXml))
             {
                 using var xmlReader = XmlReader.Create(stringReader);
-                myXslTrans.Transform(xmlReader, null, xmlWriter);
+                xslCompiledTransform.Transform(xmlReader, null, xmlWriter);
             }
-            
+
             var result = writer.ToString();
             return result;
         }

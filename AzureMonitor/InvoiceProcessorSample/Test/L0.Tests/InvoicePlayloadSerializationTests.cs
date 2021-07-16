@@ -1,8 +1,8 @@
-using Common.Core;
-using FluentAssertions;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using Common.Core;
+using FluentAssertions;
 using Xunit;
 
 namespace L0.Tests

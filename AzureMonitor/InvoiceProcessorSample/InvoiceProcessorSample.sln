@@ -5,17 +5,27 @@ VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{21BBAAA9-9DB3-4265-8713-1FAF50CABC6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceProcessor.Api", "Source\InvoiceProcessor.Api\InvoiceProcessor.Api.csproj", "{ADCB6225-B237-49D8-A5C7-2E60D93995DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvoiceProcessor.Api", "Source\InvoiceProcessor.Api\InvoiceProcessor.Api.csproj", "{ADCB6225-B237-49D8-A5C7-2E60D93995DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceProcessor.Functions", "Source\InvoiceProcessor.Functions\InvoiceProcessor.Functions.csproj", "{DCDBE5B1-7D5B-413A-9E45-1CF21EFD52C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvoiceProcessor.Functions", "Source\InvoiceProcessor.Functions\InvoiceProcessor.Functions.csproj", "{DCDBE5B1-7D5B-413A-9E45-1CF21EFD52C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "External.Api", "Source\External.Api\External.Api.csproj", "{CFEB9256-9A00-4623-8B37-41D2355F38E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.Api", "Source\External.Api\External.Api.csproj", "{CFEB9256-9A00-4623-8B37-41D2355F38E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Source\Common\Common.csproj", "{01E9471A-3ADB-474F-89E5-831823A80833}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Source\Common\Common.csproj", "{01E9471A-3ADB-474F-89E5-831823A80833}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{F9F22864-D9AB-464E-BE2A-05AC9E36ED7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L0.Tests", "Test\L0.Tests\L0.Tests.csproj", "{CB809844-CF0D-4EDE-BC67-30B1957822E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L0.Tests", "Test\L0.Tests\L0.Tests.csproj", "{CB809844-CF0D-4EDE-BC67-30B1957822E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{437FB1B1-2B85-4322-BD0B-E90AC6151346}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		CodingRules.ruleset = CodingRules.ruleset
+		Directory.Build.props = Directory.Build.props
+		stylecop.json = stylecop.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
