@@ -1,6 +1,6 @@
 ﻿namespace InvoiceProcessor.FakeExternalService.Api.Controllers
 {
-    public enum OperationStatus
+    public enum ExternalBatchOperationStatus
     {
         Unknown = 0,
         Processing = 1,

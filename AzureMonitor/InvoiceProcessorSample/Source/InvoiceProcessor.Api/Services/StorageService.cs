@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using InvoiceProcessor.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -75,7 +76,7 @@ namespace InvoiceProcessor.Api.Services
                         },
                         metadata: new Dictionary<string, string>
                         {
-                            { "Customer", "Customer1" }
+                            { MetadataKeys.Customer, "Customer1" }
                         },
                         cancellationToken: cancellationToken);
                 });

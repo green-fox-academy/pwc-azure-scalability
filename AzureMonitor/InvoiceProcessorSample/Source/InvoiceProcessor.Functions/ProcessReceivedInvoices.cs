@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using InvoiceProcessor.Common;
 using InvoiceProcessor.Common.Core;
 using InvoiceProcessor.Common.Services;
 using InvoiceProcessor.Common.Transformations;
@@ -31,7 +32,7 @@ namespace InvoiceProcessor.Functions.Functions
             _client = httpClientFactory.CreateClient();
         }
 
-        [FunctionName("ProcessReceivedInvoices")]
+        [FunctionName(nameof(ProcessReceivedInvoices))]
         public async Task Run(
             [BlobTrigger("customer-payloads/{name}", Connection = SettingNames.StorageConnection)]
             CloudBlockBlob customerPayloadCloudBlock,
@@ -42,6 +43,8 @@ namespace InvoiceProcessor.Functions.Functions
             ILogger logger,
             CancellationToken cancellationToken)
         {
+            return;
+
             if (customerPayloadCloudBlock is null)
             {
                 throw new ArgumentNullException(nameof(customerPayloadCloudBlock));
@@ -67,7 +70,7 @@ namespace InvoiceProcessor.Functions.Functions
                 throw new ArgumentNullException(nameof(logger));
             }
 
-            customerPayloadCloudBlock.Metadata.TryGetValue("Customer", out var customer);
+            customerPayloadCloudBlock.Metadata.TryGetValue(MetadataKeys.Customer, out var customer);
             logger.LogDebug("ProcessReceivedInvoices triggered for blob. Name:{Name}, Size:{Size}, Customer:{Customer} bytes", name, customerPayloadCloudBlock.Properties.Length, customer);
 
             string invoiceSetXml;
@@ -83,7 +86,7 @@ namespace InvoiceProcessor.Functions.Functions
 
                 logger.LogDebug("Uploading transformed xml to blob storage");
                 transformedPayloadCloudBlock.Properties.ContentType = "text/xml";
-                transformedPayloadCloudBlock.Metadata["Customer"] = customer;
+                transformedPayloadCloudBlock.Metadata[MetadataKeys.Customer] = customer;
                 await transformedPayloadCloudBlock.UploadFromStreamAsync(targetMemoryStream, cancellationToken: cancellationToken);
 
                 targetMemoryStream.Position = 0;
@@ -104,7 +107,7 @@ namespace InvoiceProcessor.Functions.Functions
 WHERE c.customer = 'Customer1' AND c.status = '{InvoiceStatus.Created}'
 ORDER BY c._ts";
 
-            var cosmosDBAttribute = new CosmosDBAttribute("InvoiceProcessorDb", "Invoices")
+            var cosmosDBAttribute = new CosmosDBAttribute(CosmosDbKeys.DatabaseName, CosmosDbKeys.InvoicesCollectionName)
             {
                 ConnectionStringSetting = SettingNames.CosmosDBConnection,
                 PartitionKey = Invoice.PartitionKey,
@@ -114,10 +117,9 @@ ORDER BY c._ts";
             var unsentInvoices = (await binder.BindAsync<IEnumerable<Invoice>>(cosmosDBAttribute, cancellationToken)).ToList();
             logger.LogDebug("Unsent invoices. InvoiceCount:{InvoiceCount}", unsentInvoices.Count);
 
-            // Send
             foreach (var invoice in unsentInvoices)
             {
-                invoice.Status = InvoiceStatus.Sent;
+                invoice.Status = InvoiceStatus.SentToExternalSystem;
             }
 
             await SaveInvoices(binder, customer, unsentInvoices, cancellationToken);
@@ -136,7 +138,7 @@ ORDER BY c._ts";
 
         private static async Task SaveInvoices(Binder binder, string customer, ICollection<Invoice> invoices, CancellationToken cancellationToken)
         {
-            var cosmosDBAttribute = new CosmosDBAttribute("InvoiceProcessorDb", "Invoices")
+            var cosmosDBAttribute = new CosmosDBAttribute(CosmosDbKeys.DatabaseName, CosmosDbKeys.InvoicesCollectionName)
             {
                 CreateIfNotExists = true,
                 ConnectionStringSetting = SettingNames.CosmosDBConnection,

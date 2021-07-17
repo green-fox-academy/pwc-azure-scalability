@@ -31,8 +31,12 @@ namespace InvoiceProcessor.Common.Core
         public DateTime? SentAt { get; set; }
 
         [XmlIgnore]
-        [JsonProperty(PropertyName = "verifiedAt")]
-        public DateTime? VerifiedAt { get; set; }
+        [JsonProperty(PropertyName = "externalBatchId")]
+        public Guid? ExternalBatchId { get; set; }
+
+        [XmlIgnore]
+        [JsonProperty(PropertyName = "externalBatchCompletedAt")]
+        public DateTime? ExternalBatchCompletedAt { get; set; }
 
         [XmlAttribute(nameof(InvoiceNumber))]
         [JsonProperty(PropertyName = "invoiceNumber")]

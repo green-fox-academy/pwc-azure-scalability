@@ -38,7 +38,7 @@ namespace InvoiceProcessor.FakeExternalService.Api.Controllers
             {
                 PartitionKey = "OperationStates",
                 RowKey = id.ToString(),
-                Status = OperationStatus.Processing,
+                Status = ExternalBatchOperationStatus.Processing,
             };
 
             var tableClient = _tableServiceClient.GetTableClient("FakeExternalServiceData");
@@ -50,15 +50,15 @@ namespace InvoiceProcessor.FakeExternalService.Api.Controllers
 
         [HttpGet]
         [Route(nameof(GetInvoiceBatchStatus))]
-        public async Task<ActionResult<OperationStatus>> GetInvoiceBatchStatus(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ExternalBatchOperationStatus>> GetInvoiceBatchStatus(Guid id, CancellationToken cancellationToken)
         {
             var tableClient = _tableServiceClient.GetTableClient("FakeExternalServiceData");
             await tableClient.CreateIfNotExistsAsync(cancellationToken);
 
             var operationState = (await tableClient.GetEntityAsync<OperationState>("OperationStates", id.ToString(), cancellationToken: cancellationToken)).Value;
-            if (operationState.Status == OperationStatus.Processing && (DateTimeOffset.UtcNow - operationState.Timestamp.Value) > TimeSpan.FromSeconds(5))
+            if (operationState.Status == ExternalBatchOperationStatus.Processing && (DateTimeOffset.UtcNow - operationState.Timestamp.Value) > TimeSpan.FromSeconds(5))
             {
-                operationState.Status = OperationStatus.Completed;
+                operationState.Status = ExternalBatchOperationStatus.Completed;
                 await tableClient.UpdateEntityAsync(operationState, operationState.ETag, cancellationToken: cancellationToken);
             }
 
@@ -73,7 +73,7 @@ namespace InvoiceProcessor.FakeExternalService.Api.Controllers
             public ETag ETag { get; set; }
 
             [JsonConverter(typeof(StringEnumConverter))]
-            public OperationStatus Status { get; set; }
+            public ExternalBatchOperationStatus Status { get; set; }
         }
     }
 }

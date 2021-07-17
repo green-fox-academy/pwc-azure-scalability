@@ -4,7 +4,7 @@
     {
         Unknown = 0,
         Created,
-        Sent,
-        Verified
+        SentToExternalSystem,
+        ProcessedByExternalSystem
     }
 }

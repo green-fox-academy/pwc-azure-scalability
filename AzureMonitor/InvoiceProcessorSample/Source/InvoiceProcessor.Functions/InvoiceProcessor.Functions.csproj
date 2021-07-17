@@ -7,6 +7,7 @@
     <PackageReference Include="Azure.Storage.Blobs" Version="12.9.1" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.10" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.5.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="4.0.4" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.17" />
@@ -22,10 +23,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Activities\" />
-    <Folder Include="Orchestrators\" />
+    <ProjectReference Include="..\InvoiceProcessor.Common\InvoiceProcessor.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\InvoiceProcessor.Common\InvoiceProcessor.Common.csproj" />
+    <Folder Include="Activities\" />
+    <Folder Include="Orchestrators\" />
   </ItemGroup>
 </Project>
