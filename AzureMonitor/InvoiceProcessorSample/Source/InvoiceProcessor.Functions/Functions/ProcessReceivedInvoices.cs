@@ -123,6 +123,27 @@ ORDER BY c._ts";
             await SaveInvoices(binder, customer, unsentInvoices, cancellationToken);
             logger.LogDebug("Sent invoices. InvoiceCount:{InvoiceCount}", unsentInvoices.Count);
 
+            var externalBatchId = await SendInvoicesToExternalService(unsentInvoices, cancellationToken);
+            logger.LogDebug("ExternalBatchId:{ExternalBatchId}", externalBatchId);
+
+            var response = await GetBatchStatus(externalBatchId, cancellationToken);
+            logger.LogDebug("BatchStatus:{BatchStatus}", response);
+
+            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+            response = await GetBatchStatus(externalBatchId, cancellationToken);
+            logger.LogDebug("BatchStatus:{BatchStatus}", response);
+        }
+
+        private async Task<string> GetBatchStatus(Guid externalBatchId, CancellationToken cancellationToken)
+        {
+            var responseMessage = await _client.GetAsync($"https://localhost:6001/ExternalInvoices/GetInvoiceBatchStatus?id={externalBatchId}", cancellationToken);
+            responseMessage.EnsureSuccessStatusCode();
+            var response = await responseMessage.Content.ReadAsAsync<string>(cancellationToken);
+            return response;
+        }
+
+        private async Task<Guid> SendInvoicesToExternalService(List<Invoice> unsentInvoices, CancellationToken cancellationToken)
+        {
             var json = JsonConvert.SerializeObject(unsentInvoices);
             HttpResponseMessage responseMessage;
             using (var memoryStream = new MemoryStream())
@@ -143,13 +164,12 @@ ORDER BY c._ts";
                     }
                 };
                 content.Add(streamContent, "invoices", "invoices.json");
-                responseMessage = await _client.PostAsync("https://localhost:6001/ExternalInvoices/ProcessInvoices", content, cancellationToken);
+                responseMessage = await _client.PostAsync("https://localhost:6001/ExternalInvoices/ProcessInvoiceBatch", content, cancellationToken);
             }
 
             responseMessage.EnsureSuccessStatusCode();
-            var response = await responseMessage.Content.ReadAsStringAsync();
-
-            logger.LogDebug("Response:{Response}", response);
+            var response = await responseMessage.Content.ReadAsAsync<Guid>();
+            return response;
         }
 
         private static async Task SaveInvoices(Binder binder, string customer, ICollection<Invoice> invoices, CancellationToken cancellationToken)

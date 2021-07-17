@@ -25,8 +25,8 @@ namespace InvoiceProcessor.FakeExternalService.Api.Controllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        [Route(nameof(ProcessInvoices))]
-        public async Task<ActionResult<Guid>> ProcessInvoices([Required] IFormFile invoices, CancellationToken cancellationToken)
+        [Route(nameof(ProcessInvoiceBatch))]
+        public async Task<ActionResult<Guid>> ProcessInvoiceBatch([Required] IFormFile invoices, CancellationToken cancellationToken)
         {
             if (invoices is null)
             {
@@ -49,14 +49,14 @@ namespace InvoiceProcessor.FakeExternalService.Api.Controllers
         }
 
         [HttpGet]
-        [Route(nameof(GetInvoiceStatus))]
-        public async Task<ActionResult<OperationStatus>> GetInvoiceStatus(Guid id, CancellationToken cancellationToken)
+        [Route(nameof(GetInvoiceBatchStatus))]
+        public async Task<ActionResult<OperationStatus>> GetInvoiceBatchStatus(Guid id, CancellationToken cancellationToken)
         {
             var tableClient = _tableServiceClient.GetTableClient("FakeExternalServiceData");
             await tableClient.CreateIfNotExistsAsync(cancellationToken);
 
             var operationState = (await tableClient.GetEntityAsync<OperationState>("OperationStates", id.ToString(), cancellationToken: cancellationToken)).Value;
-            if (operationState.Status == OperationStatus.Processing && (DateTimeOffset.UtcNow - operationState.Timestamp.Value) > TimeSpan.FromMinutes(1))
+            if (operationState.Status == OperationStatus.Processing && (DateTimeOffset.UtcNow - operationState.Timestamp.Value) > TimeSpan.FromSeconds(5))
             {
                 operationState.Status = OperationStatus.Completed;
                 await tableClient.UpdateEntityAsync(operationState, operationState.ETag, cancellationToken: cancellationToken);
