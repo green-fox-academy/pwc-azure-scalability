@@ -12,6 +12,7 @@ namespace InvoiceProcessor.Functions
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services
+                .AddHttpClient()
                 .AddSingleton<IXslTransformationService, XslTransformationService>()
                 .AddSingleton<IInvoiceSetSerializer, InvoiceSetSerializer>();
         }

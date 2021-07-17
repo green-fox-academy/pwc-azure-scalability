@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using InvoiceProcessor.Common.Core;
@@ -9,6 +14,7 @@ using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
 
 namespace InvoiceProcessor.Functions.Functions
 {
@@ -16,16 +22,18 @@ namespace InvoiceProcessor.Functions.Functions
     {
         private readonly IXslTransformationService _xslTransformationService;
         private readonly IInvoiceSetSerializer _invoiceSetSerializer;
+        private readonly HttpClient _client;
 
-        public ProcessReceivedInvoices(IXslTransformationService xslTransformationService, IInvoiceSetSerializer invoiceSetSerializer)
+        public ProcessReceivedInvoices(IXslTransformationService xslTransformationService, IInvoiceSetSerializer invoiceSetSerializer, IHttpClientFactory httpClientFactory)
         {
             _xslTransformationService = xslTransformationService;
             _invoiceSetSerializer = invoiceSetSerializer;
+            _client = httpClientFactory.CreateClient();
         }
 
         [FunctionName("ProcessReceivedInvoices")]
         public async Task Run(
-            [BlobTrigger("customer-payloads/{name}", Connection = "AzureWebJobsStorage")]
+            [BlobTrigger("customer-payloads/{name}", Connection = SettingNames.StorageConnection)]
             CloudBlockBlob customerPayloadCloudBlock,
             [Blob("transformed-payloads/{name}", FileAccess.ReadWrite)]
             CloudBlockBlob transformedPayloadCloudBlock,
@@ -90,19 +98,79 @@ namespace InvoiceProcessor.Functions.Functions
             var invoiceSet = _invoiceSetSerializer.DeserializeFromXml(invoiceSetXml);
             logger.LogDebug("InvoiceSet deserialized. InvoiceCount:{InvoiceCount}", invoiceSet.Invoices.Length);
 
+            await SaveInvoices(binder, customer, invoiceSet.Invoices, cancellationToken);
+
+            var query = @$"SELECT TOP 10 * FROM c
+WHERE c.customer = 'Customer1' AND c.status = '{InvoiceStatus.Created}'
+ORDER BY c._ts";
+
+            var cosmosDBAttribute = new CosmosDBAttribute("InvoiceProcessorDb", "Invoices")
+            {
+                ConnectionStringSetting = SettingNames.CosmosDBConnection,
+                PartitionKey = Invoice.PartitionKey,
+                SqlQuery = query
+            };
+
+            var unsentInvoices = (await binder.BindAsync<IEnumerable<Invoice>>(cosmosDBAttribute, cancellationToken)).ToList();
+            logger.LogDebug("Unsent invoices. InvoiceCount:{InvoiceCount}", unsentInvoices.Count);
+
+            // Send
+            foreach (var invoice in unsentInvoices)
+            {
+                invoice.Status = InvoiceStatus.Sent;
+            }
+
+            await SaveInvoices(binder, customer, unsentInvoices, cancellationToken);
+            logger.LogDebug("Sent invoices. InvoiceCount:{InvoiceCount}", unsentInvoices.Count);
+
+            var json = JsonConvert.SerializeObject(unsentInvoices);
+            HttpResponseMessage responseMessage;
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var sw = new StreamWriter(memoryStream, leaveOpen: true))
+                {
+                    await sw.WriteAsync(json);
+                }
+
+                memoryStream.Position = 0;
+                using var content = new MultipartFormDataContent();
+                using var streamContent = new StreamContent(memoryStream)
+                {
+                    Headers =
+                    {
+                        ContentLength = memoryStream.Length,
+                        ContentType = new MediaTypeHeaderValue("application/json")
+                    }
+                };
+                content.Add(streamContent, "invoices", "invoices.json");
+                responseMessage = await _client.PostAsync("https://localhost:6001/ExternalInvoices/ProcessInvoices", content, cancellationToken);
+            }
+
+            responseMessage.EnsureSuccessStatusCode();
+            var response = await responseMessage.Content.ReadAsStringAsync();
+
+            logger.LogDebug("Response:{Response}", response);
+        }
+
+        private static async Task SaveInvoices(Binder binder, string customer, ICollection<Invoice> invoices, CancellationToken cancellationToken)
+        {
             var cosmosDBAttribute = new CosmosDBAttribute("InvoiceProcessorDb", "Invoices")
             {
                 CreateIfNotExists = true,
-                PartitionKey = "/customer",
-                ConnectionStringSetting = "CosmosDBConnection"
+                ConnectionStringSetting = SettingNames.CosmosDBConnection,
+                PartitionKey = Invoice.PartitionKey
             };
 
             var invoiceCollector = await binder.BindAsync<IAsyncCollector<Invoice>>(cosmosDBAttribute, cancellationToken);
-            foreach (var invoice in invoiceSet.Invoices)
+            foreach (var invoice in invoices)
             {
-                invoice.Customer = customer;
-                invoice.Status = InvoiceStatus.Created;
-                invoice.CreatedAt = DateTime.UtcNow;
+                if (invoice.Id == null)
+                {
+                    invoice.Customer = customer;
+                    invoice.Status = InvoiceStatus.Created;
+                    invoice.CreatedAt = DateTime.UtcNow;
+                }
+
                 await invoiceCollector.AddAsync(invoice, cancellationToken);
             }
         }

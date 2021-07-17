@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace InvoiceProcessor.Common.Core
 {
     public class Invoice
     {
+        public const string PartitionKey = "/customer";
+
         [XmlIgnore]
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
@@ -16,6 +19,7 @@ namespace InvoiceProcessor.Common.Core
 
         [XmlIgnore]
         [JsonProperty(PropertyName = "status")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public InvoiceStatus Status { get; set; }
 
         [XmlIgnore]
