@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace InvoiceProcessor.Common.Core
 {
-    [XmlRoot(nameof(Root))]
-    public class Root
+    [XmlRoot("Root")]
+    public class InvoiceSet
     {
         [XmlArray(nameof(Invoices))]
         [XmlArrayItem(nameof(Invoice), Type = typeof(Invoice))]

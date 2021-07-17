@@ -1,22 +1,23 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
+﻿using System.IO;
 using FluentAssertions;
+using InvoiceProcessor.Api.Services;
 using InvoiceProcessor.Common.Core;
+using InvoiceProcessor.Common.Services;
 using Xunit;
 
 namespace InvoiceProcessor.L0.Tests
 {
-    public class InvoicePayloadSerializationTests
+    public class InvoiceSetSerializerTests
     {
-        private readonly Root _invoicePayload;
+        private readonly InvoiceSetSerializer _sut;
+        private readonly InvoiceSet _invoicePayload;
         private readonly string _sampleXml;
 
-        public InvoicePayloadSerializationTests()
+        public InvoiceSetSerializerTests()
         {
+            _sut = new InvoiceSetSerializer();
             _sampleXml = File.ReadAllText("./TestFiles/CoreInvoicesSample.xml");
-            _invoicePayload = new Root
+            _invoicePayload = new InvoiceSet
             {
                 Invoices = new[]
                 {
@@ -69,36 +70,15 @@ namespace InvoiceProcessor.L0.Tests
         [Fact]
         public void TestInvoicePayloadSerialization()
         {
-            var xml = SerializeToXml(_invoicePayload);
+            var xml = _sut.SerializeToXml(_invoicePayload);
             xml.Should().Be(_sampleXml);
         }
 
         [Fact]
         public void TestInvoicePayloadDeserialization()
         {
-            var invoicePayload = DeserializeFromXml<Root>(_sampleXml);
+            var invoicePayload = _sut.DeserializeFromXml(_sampleXml);
             invoicePayload.Should().BeEquivalentTo(_invoicePayload);
-        }
-
-        private static string SerializeToXml(object model)
-        {
-            using var writer = new StringWriter();
-            using var xmlWriter = XmlWriter.Create(writer, new XmlWriterSettings
-            {
-                OmitXmlDeclaration = true,
-                Indent = true
-            });
-            var serializer = new XmlSerializer(model.GetType());
-            serializer.Serialize(xmlWriter, model);
-            return writer.ToString();
-        }
-
-        private static TType DeserializeFromXml<TType>(string xml)
-        {
-            using var stringReader = new StringReader(xml);
-            using var xmlReader = XmlReader.Create(stringReader);
-            var serializer = new XmlSerializer(typeof(TType));
-            return (TType)serializer.Deserialize(xmlReader);
         }
     }
 }

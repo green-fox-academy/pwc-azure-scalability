@@ -1,4 +1,5 @@
-﻿using InvoiceProcessor.Common.Transformations;
+﻿using InvoiceProcessor.Common.Services;
+using InvoiceProcessor.Common.Transformations;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,10 +11,9 @@ namespace InvoiceProcessor.Functions
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            //builder.AddAzureStorage();
-
             builder.Services
-                .AddSingleton<IXslTransformationService, XslTransformationService>();
+                .AddSingleton<IXslTransformationService, XslTransformationService>()
+                .AddSingleton<IInvoiceSetSerializer, InvoiceSetSerializer>();
         }
     }
 }
