@@ -134,44 +134,6 @@ ORDER BY c._ts";
             logger.LogDebug("BatchStatus:{BatchStatus}", response);
         }
 
-        private async Task<string> GetBatchStatus(Guid externalBatchId, CancellationToken cancellationToken)
-        {
-            var responseMessage = await _client.GetAsync($"https://localhost:6001/ExternalInvoices/GetInvoiceBatchStatus?id={externalBatchId}", cancellationToken);
-            responseMessage.EnsureSuccessStatusCode();
-            var response = await responseMessage.Content.ReadAsAsync<string>(cancellationToken);
-            return response;
-        }
-
-        private async Task<Guid> SendInvoicesToExternalService(List<Invoice> unsentInvoices, CancellationToken cancellationToken)
-        {
-            var json = JsonConvert.SerializeObject(unsentInvoices);
-            HttpResponseMessage responseMessage;
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var sw = new StreamWriter(memoryStream, leaveOpen: true))
-                {
-                    await sw.WriteAsync(json);
-                }
-
-                memoryStream.Position = 0;
-                using var content = new MultipartFormDataContent();
-                using var streamContent = new StreamContent(memoryStream)
-                {
-                    Headers =
-                    {
-                        ContentLength = memoryStream.Length,
-                        ContentType = new MediaTypeHeaderValue("application/json")
-                    }
-                };
-                content.Add(streamContent, "invoices", "invoices.json");
-                responseMessage = await _client.PostAsync("https://localhost:6001/ExternalInvoices/ProcessInvoiceBatch", content, cancellationToken);
-            }
-
-            responseMessage.EnsureSuccessStatusCode();
-            var response = await responseMessage.Content.ReadAsAsync<Guid>();
-            return response;
-        }
-
         private static async Task SaveInvoices(Binder binder, string customer, ICollection<Invoice> invoices, CancellationToken cancellationToken)
         {
             var cosmosDBAttribute = new CosmosDBAttribute("InvoiceProcessorDb", "Invoices")
@@ -207,6 +169,44 @@ ORDER BY c._ts";
                     Customer = customer
                 },
                 cancellationToken);
+        }
+
+        private async Task<string> GetBatchStatus(Guid externalBatchId, CancellationToken cancellationToken)
+        {
+            var responseMessage = await _client.GetAsync($"https://localhost:6001/ExternalInvoices/GetInvoiceBatchStatus?id={externalBatchId}", cancellationToken);
+            responseMessage.EnsureSuccessStatusCode();
+            var response = await responseMessage.Content.ReadAsAsync<string>(cancellationToken);
+            return response;
+        }
+
+        private async Task<Guid> SendInvoicesToExternalService(List<Invoice> unsentInvoices, CancellationToken cancellationToken)
+        {
+            var json = JsonConvert.SerializeObject(unsentInvoices);
+            HttpResponseMessage responseMessage;
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var sw = new StreamWriter(memoryStream, leaveOpen: true))
+                {
+                    await sw.WriteAsync(json);
+                }
+
+                memoryStream.Position = 0;
+                using var content = new MultipartFormDataContent();
+                using var streamContent = new StreamContent(memoryStream)
+                {
+                    Headers =
+                    {
+                        ContentLength = memoryStream.Length,
+                        ContentType = new MediaTypeHeaderValue("application/json")
+                    }
+                };
+                content.Add(streamContent, "invoices", "invoices.json");
+                responseMessage = await _client.PostAsync("https://localhost:6001/ExternalInvoices/ProcessInvoiceBatch", content, cancellationToken);
+            }
+
+            responseMessage.EnsureSuccessStatusCode();
+            var response = await responseMessage.Content.ReadAsAsync<Guid>(cancellationToken);
+            return response;
         }
 
         private class TransformedPayloadEntity : TableEntity
