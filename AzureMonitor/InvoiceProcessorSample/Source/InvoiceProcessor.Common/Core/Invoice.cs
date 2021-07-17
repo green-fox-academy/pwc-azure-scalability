@@ -6,21 +6,27 @@ namespace InvoiceProcessor.Common.Core
 {
     public class Invoice
     {
+        [XmlIgnore]
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
+        [XmlIgnore]
         [JsonProperty(PropertyName = "customer")]
         public string Customer { get; set; }
 
+        [XmlIgnore]
         [JsonProperty(PropertyName = "status")]
         public InvoiceStatus Status { get; set; }
 
+        [XmlIgnore]
         [JsonProperty(PropertyName = "createdAt")]
         public DateTime CreatedAt { get; set; }
 
+        [XmlIgnore]
         [JsonProperty(PropertyName = "sentAt")]
         public DateTime? SentAt { get; set; }
 
+        [XmlIgnore]
         [JsonProperty(PropertyName = "verifiedAt")]
         public DateTime? VerifiedAt { get; set; }
 
