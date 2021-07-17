@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using FluentAssertions;
-using InvoiceProcessor.Api.Services;
 using InvoiceProcessor.Common.Core;
 using InvoiceProcessor.Common.Services;
 using Xunit;

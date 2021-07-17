@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace InvoiceProcessor.Common
+﻿namespace InvoiceProcessor.Common
 {
     public static class BlobContainerNames
     {

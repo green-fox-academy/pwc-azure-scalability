@@ -1,5 +1,4 @@
-﻿using Azure.Storage.Blobs;
-using InvoiceProcessor.Api.Services;
+﻿using InvoiceProcessor.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Azure;

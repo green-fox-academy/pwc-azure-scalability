@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using InvoiceProcessor.FakeExternalService.Api.Controllers;
+using InvoiceProcessor.Functions.Services;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
@@ -11,11 +11,11 @@ namespace InvoiceProcessor.Functions.Activities
 {
     public class GetExternalBatchStatusActivity
     {
-        private readonly HttpClient _client;
+        private readonly IFakeExternalServiceClient _fakeExternalServiceClient;
 
-        public GetExternalBatchStatusActivity(IHttpClientFactory httpClientFactory)
+        public GetExternalBatchStatusActivity(IFakeExternalServiceClient fakeExternalServiceClient)
         {
-            _client = httpClientFactory.CreateClient();
+            _fakeExternalServiceClient = fakeExternalServiceClient;
         }
 
         [FunctionName(nameof(GetExternalBatchStatusActivity))]
@@ -24,11 +24,9 @@ namespace InvoiceProcessor.Functions.Activities
             ILogger logger,
             CancellationToken cancellationToken)
         {
-            var responseMessage = await _client.GetAsync($"https://localhost:6001/ExternalInvoices/GetInvoiceBatchStatus?id={externalBatchId}", cancellationToken);
-            responseMessage.EnsureSuccessStatusCode();
-            var response = await responseMessage.Content.ReadAsAsync<string>(cancellationToken);
-            var externalBatchOperationStatus = Enum.Parse<ExternalBatchOperationStatus>(response);
-            return externalBatchOperationStatus;
+            return await _fakeExternalServiceClient.GetInvoiceBatchStatus(externalBatchId, cancellationToken);
         }
+
+
     }
 }

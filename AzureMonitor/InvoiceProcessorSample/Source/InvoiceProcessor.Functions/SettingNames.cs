@@ -4,5 +4,6 @@
     {
         public const string CosmosDBConnection = "CosmosDBConnection";
         public const string StorageConnection = "AzureWebJobsStorage";
+        public const string ExternalServiceBaseUrl = "ExternalServiceBaseUrl";
     }
 }

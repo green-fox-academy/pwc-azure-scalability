@@ -5,6 +5,9 @@
       "samplingSettings": {
         "isEnabled": true,
         "excludedTypes": "Request"
+      },
+      "httpAutoCollectionOptions": {
+        "enableW3CDistributedTracing": true
       }
     },
     "logLevel": {
@@ -12,6 +15,15 @@
       "Host.Results": "Warning",
       "Host.Aggregator": "Warning",
       "Function": "Debug"
+    }
+  },
+  "extensions": {
+    "durableTask": {
+      "hubName": "InvoiceProcessorSample",
+      "tracing": {
+        "distributedTracingEnabled": true,
+        "distributedTracingProtocol": "W3CTraceContext"
+      }
     }
   }
 }
