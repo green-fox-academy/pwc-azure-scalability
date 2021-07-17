@@ -21,12 +21,9 @@ namespace InvoiceProcessor.Functions.Activities
         [FunctionName(nameof(GetExternalBatchStatusActivity))]
         public async Task<ExternalBatchOperationStatus> Run(
             [ActivityTrigger]Guid externalBatchId,
-            ILogger logger,
             CancellationToken cancellationToken)
         {
             return await _fakeExternalServiceClient.GetInvoiceBatchStatus(externalBatchId, cancellationToken);
         }
-
-
     }
 }

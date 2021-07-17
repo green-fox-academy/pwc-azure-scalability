@@ -38,7 +38,6 @@ namespace InvoiceProcessor.Functions.Orchestrators
             var partitionKey = context.CurrentUtcDateTime.ToString("yyyy-MM");
             var rowKey = Path.GetFileName(blobUri.AbsoluteUri);
             await context.CallActivityAsync(nameof(SaveInvoiceSetEntityActivity), tableEntity);
-            //await context.CallActivityAsync(nameof(SaveInvoiceSetEntityActivity), (customer, partitionKey, rowKey, blobUri, (Uri)null));
 
             // Transform xml
             var transformPayloadFunctionName = $"TransformPayloadFor{customer}Activity";
@@ -47,13 +46,11 @@ namespace InvoiceProcessor.Functions.Orchestrators
             // Save info to table storage
             tableEntity.TransformedFileUri = resultUri.ToString();
             await context.CallActivityAsync(nameof(SaveInvoiceSetEntityActivity), tableEntity);
-            //await context.CallActivityAsync(nameof(SaveInvoiceSetEntityActivity), (customer, partitionKey, rowKey, blobUri, resultUri));
 
             // Save invoices individually to CosmosDB
             await context.CallActivityAsync(nameof(SaveInvoicesActivity), (resultUri, customer));
 
             return outputs;
         }
-
     }
 }

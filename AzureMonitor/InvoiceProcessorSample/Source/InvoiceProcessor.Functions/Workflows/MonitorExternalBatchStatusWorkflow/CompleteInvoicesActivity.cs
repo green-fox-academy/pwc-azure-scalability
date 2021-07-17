@@ -26,7 +26,7 @@ namespace InvoiceProcessor.Functions.Workflows.SendInvoicesBatchedWorkflow
 
         [FunctionName(nameof(CompleteInvoicesActivity))]
         public async Task Run(
-            [ActivityTrigger] (string Customer, Guid ExternalBatchId) input,
+            [ActivityTrigger](string Customer, Guid ExternalBatchId) input,
             Binder binder,
             ILogger logger,
             CancellationToken cancellationToken)

@@ -15,8 +15,7 @@ namespace InvoiceProcessor.Functions.Workflows.SendInvoicesBatched
         [FunctionName(nameof(ManageSendInvoicesBatchedWorkflowFunction))]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest request,
-            [DurableClient] IDurableOrchestrationClient orchestrationClient,
-            ILogger logger)
+            [DurableClient] IDurableOrchestrationClient orchestrationClient)
         {
             var queryParams = request.GetQueryParameterDictionary();
             queryParams.TryGetValue("Customer", out var customer);

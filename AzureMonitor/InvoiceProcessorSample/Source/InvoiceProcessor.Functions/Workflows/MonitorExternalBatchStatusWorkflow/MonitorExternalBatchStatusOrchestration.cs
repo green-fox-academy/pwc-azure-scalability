@@ -13,8 +13,7 @@ namespace InvoiceProcessor.Functions.Workflows.MonitorExternalBatchStatusWorkflo
     {
         [FunctionName(nameof(MonitorExternalBatchStatusOrchestration))]
         public static async Task RunOrchestrator(
-            [OrchestrationTrigger] IDurableOrchestrationContext context,
-            CancellationToken cancellationToken)
+            [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
             var (customer, externalBatchId) = context.GetInput<(string Customer, Guid ExternalBatchId)>();
             var pollingInterval = TimeSpan.FromSeconds(60);
@@ -27,7 +26,7 @@ namespace InvoiceProcessor.Functions.Workflows.MonitorExternalBatchStatusWorkflo
                 {
                     case ExternalBatchOperationStatus.Processing:
                         var nextCheck = context.CurrentUtcDateTime.Add(pollingInterval);
-                        await context.CreateTimer(nextCheck, cancellationToken);
+                        await context.CreateTimer(nextCheck, CancellationToken.None);
                         if (context.CurrentUtcDateTime > expiryTime)
                         {
                             throw new TimeoutException($"External batch processing did not finish in time. ExternalBatchId:{externalBatchId}");

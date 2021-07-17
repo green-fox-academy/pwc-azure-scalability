@@ -14,8 +14,7 @@ namespace InvoiceProcessor.Functions.Workflows.SendInvoicesBatchedWorkflow
         [FunctionName("SendInvoicesBatchedOrchestration")]
         public static async Task RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context,
-            ILogger logger,
-            CancellationToken cancellationToken)
+            ILogger logger)
         {
             var customer = context.GetInput<string>();
             try
@@ -35,7 +34,7 @@ namespace InvoiceProcessor.Functions.Workflows.SendInvoicesBatchedWorkflow
             }
 
             var nextRun = context.CurrentUtcDateTime.AddSeconds(30);
-            await context.CreateTimer(nextRun, cancellationToken);
+            await context.CreateTimer(nextRun, CancellationToken.None);
 
             context.ContinueAsNew(customer);
         }

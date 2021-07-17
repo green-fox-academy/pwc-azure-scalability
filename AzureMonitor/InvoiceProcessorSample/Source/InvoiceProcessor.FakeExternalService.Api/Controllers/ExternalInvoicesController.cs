@@ -11,7 +11,6 @@ using Newtonsoft.Json.Converters;
 
 namespace InvoiceProcessor.FakeExternalService.Api.Controllers
 {
-
     [ApiController]
     [Route("[controller]")]
     public class ExternalInvoicesController : ControllerBase

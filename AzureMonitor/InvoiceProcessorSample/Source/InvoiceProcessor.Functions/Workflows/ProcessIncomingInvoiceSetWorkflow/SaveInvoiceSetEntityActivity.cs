@@ -13,7 +13,6 @@ namespace InvoiceProcessor.Functions.Activities
         public async Task Run(
             [ActivityTrigger] InvoiceSetEntity entity,
             [Table("IncomingInvoiceSets")] CloudTable cloudTable,
-            ILogger logger,
             CancellationToken cancellationToken)
         {
             var tableOperation = TableOperation.InsertOrReplace(entity);
