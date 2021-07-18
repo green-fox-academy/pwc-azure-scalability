@@ -17,14 +17,14 @@ namespace InvoiceProcessor.Api.Controllers
         }
 
         [HttpGet]
-        [Route("log")]
-        public ActionResult GetLog()
+        [Route(nameof(WriteLogs))]
+        public ActionResult WriteLogs()
         {
-            _logger.LogInformation($"!Method {nameof(GetLog)} has been called.");
-            _logger.LogInformation("Method {MethodName} has been called.", nameof(GetLog));
+            _logger.LogInformation($"!Method {nameof(WriteLogs)} has been called.");
+            _logger.LogInformation("Method {MethodName} has been called.", nameof(WriteLogs));
 
-            _logger.LogWarning($"!Method {nameof(GetLog)} has been called.");
-            _logger.LogWarning("Method {MethodName} has been called.", nameof(GetLog));
+            _logger.LogWarning($"!Method {nameof(WriteLogs)} has been called.");
+            _logger.LogWarning("Method {MethodName} has been called.", nameof(WriteLogs));
 
             _logger.LogWarning($"!CPU level: {80}, MemoryUsage: {200}");
             _logger.LogWarning("CPU level: {CPULevel}, MemoryUsage: {MemoryUsage}", 80, 200);
