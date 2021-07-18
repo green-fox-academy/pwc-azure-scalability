@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility.W3C;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 

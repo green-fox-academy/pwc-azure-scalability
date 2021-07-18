@@ -10,10 +10,9 @@ namespace InvoiceProcessor.Api.Controllers
     public class ApiBackendController : ControllerBase
     {
         [HttpGet]
-        [Route("employees")]
+        [Route("Employees")]
         public ActionResult<List<Employee>> GetEmployees()
         {
-
             var employees = Enumerable.Range(1, 100).Select(index => Employee.CreateRandom());
 
             return Ok(employees);

@@ -17,10 +17,9 @@ namespace InvoiceProcessor.Api.Controllers
         }
 
         [HttpGet]
-        [Route("metric")]
-        public IActionResult GetMetric()
+        [Route(nameof(TraceMetric))]
+        public IActionResult TraceMetric()
         {
-            _telemetryClient.InstrumentationKey = "73e82620-a343-4db8-bfb5-10558b143919";
             _telemetryClient.TrackEvent(new EventTelemetry() { Name = "Invoice transformed" });
 
             _telemetryClient.TrackMetric(new MetricTelemetry() { Name = "Invoices in-progress", Sum = 100 });
