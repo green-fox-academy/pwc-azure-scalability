@@ -74,7 +74,7 @@ namespace InvoiceProcessor.Api.Controllers
             var random = new Random();
 
 #pragma warning disable CA5394 // Do not use insecure randomness
-            var delays = Enumerable.Range(1, 100).Select(_ => TimeSpan.FromSeconds(random.Next(10) * 0.5)).ToArray();
+            var delays = Enumerable.Range(1, 50).Select(_ => TimeSpan.FromSeconds(1 + (random.NextDouble() * 4))).ToArray();
 #pragma warning restore CA5394 // Do not use insecure randomness
 
             var tasks = new List<Task>();
@@ -87,6 +87,8 @@ namespace InvoiceProcessor.Api.Controllers
                     var dependencyActivity = new Activity($"#{index} dependency");
                     var dependencyOperation = _telemetryClient.StartOperation<DependencyTelemetry>(dependencyActivity);
 
+                    _telemetryClient.TrackTrace("(telemetryClient) Waiting", new Dictionary<string, string> { ["Delay"] = delay.ToString() });
+                    _logger.LogDebug("(logger) Waiting {Delay}", delay);
                     await Task.Delay(delay);
                     _telemetryClient.StopOperation(dependencyOperation);
                 }));
