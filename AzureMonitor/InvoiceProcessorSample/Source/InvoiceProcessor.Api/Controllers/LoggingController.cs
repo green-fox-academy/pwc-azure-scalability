@@ -30,12 +30,11 @@ namespace InvoiceProcessor.Api.Controllers
             _logger.LogWarning($"!CPU level: {80}, MemoryUsage: {200}");
             _logger.LogWarning("CPU level: {CPULevel}, MemoryUsage: {MemoryUsage}", 80, 200);
 
-            using (_logger.BeginScope(
-                        new Dictionary<string, string>()
-                        {
-                            { "CorrelationId", Guid.NewGuid().ToString() },
-                            { "OperationName", "SuperComplexCalculation" }
-                        }))
+            using (_logger.BeginScope(new OperationScope
+            {
+                OperationName = "Complex Operation",
+                CorrelationId = Guid.NewGuid().ToString()
+            }))
             {
                 _logger.LogWarning("Operation started.");
                 _logger.LogWarning("Operation completed.");
@@ -45,5 +44,12 @@ namespace InvoiceProcessor.Api.Controllers
 
             return Ok();
         }
+    }
+
+    public class OperationScope
+    {
+        public string CorrelationId { get; set; }
+
+        public string OperationName { get; set; }
     }
 }
