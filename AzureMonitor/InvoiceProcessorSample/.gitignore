@@ -333,3 +333,6 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# Custom
+**/profile.arm.json
