@@ -6,6 +6,8 @@ using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using InvoiceProcessor.Common;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -17,11 +19,13 @@ namespace InvoiceProcessor.Api.Services
     {
         private readonly string _azureStorageConnectionString;
         private readonly ILogger<StorageService> _logger;
+        private readonly TelemetryClient _telemetryClient;
 
-        public StorageService(ILogger<StorageService> logger, IConfiguration configuration)
+        public StorageService(ILogger<StorageService> logger, IConfiguration configuration, TelemetryClient telemetryClient)
         {
             _azureStorageConnectionString = configuration["AzureStorageConnectionString"];
             _logger = logger;
+            _telemetryClient = telemetryClient;
         }
 
         public async Task UploadAsync(IFormFile file, string containerName, string path, CancellationToken cancellationToken)
@@ -63,22 +67,27 @@ namespace InvoiceProcessor.Api.Services
 
                 _logger.LogDebug("Uploading file to blob storage");
 
-                var blobClient = containerClient.GetBlobClient(path);
-                await handleContainerNotExistsPolicy.ExecuteAsync(async () =>
+                using (var operation = _telemetryClient.StartOperation<DependencyTelemetry>("Uploading blob with telemetry info"))
                 {
-                    await blobClient.UploadAsync(
-                        content,
-                        new BlobHttpHeaders
-                        {
-                            ContentType = file.ContentType,
-                            ContentDisposition = file.ContentDisposition,
-                        },
-                        metadata: new Dictionary<string, string>
-                        {
-                            { MetadataKeys.Customer, "Customer1" }
-                        },
-                        cancellationToken: cancellationToken);
-                });
+                    var blobClient = containerClient.GetBlobClient(path);
+                    await handleContainerNotExistsPolicy.ExecuteAsync(async () =>
+                    {
+                        await blobClient.UploadAsync(
+                            content,
+                            new BlobHttpHeaders
+                            {
+                                ContentType = file.ContentType,
+                                ContentDisposition = file.ContentDisposition,
+                            },
+                            metadata: new Dictionary<string, string>
+                            {
+                                { MetadataKeys.Customer, "Customer1" },
+                                { MetadataKeys.TelemetryParentId, operation.Telemetry.Id },
+                                { MetadataKeys.TelemetryRootId, operation.Telemetry.Context.Operation.Id },
+                            },
+                            cancellationToken: cancellationToken);
+                    });
+                }
 
                 _logger.LogDebug("Upload completed");
             }
