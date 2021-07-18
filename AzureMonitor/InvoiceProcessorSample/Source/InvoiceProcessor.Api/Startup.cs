@@ -28,7 +28,7 @@ namespace InvoiceProcessor.Api
             {
                 builder.AddBlobServiceClient(Configuration["AzureStorageConnectionString"]);
             });
-            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
+            services.AddApplicationInsightsTelemetry(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 
 namespace InvoiceProcessor.FakeExternalService.Api
 {
@@ -19,6 +21,10 @@ namespace InvoiceProcessor.FakeExternalService.Api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureLogging(builder =>
+                {
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, LogLevel.Debug);
                 });
     }
 }

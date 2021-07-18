@@ -21,35 +21,29 @@ namespace InvoiceProcessor.Api.Controllers
         [Route(nameof(WriteLogs))]
         public ActionResult WriteLogs()
         {
-            _logger.LogInformation($"!Method {nameof(WriteLogs)} has been called.");
-            _logger.LogInformation("Method {MethodName} has been called.", nameof(WriteLogs));
+            _logger.LogDebug($"!Method {nameof(WriteLogs)} has been called.");
+            _logger.LogDebug("Method {MethodName} has been called.", nameof(WriteLogs));
 
-            _logger.LogWarning($"!Method {nameof(WriteLogs)} has been called.");
-            _logger.LogWarning("Method {MethodName} has been called.", nameof(WriteLogs));
+            _logger.LogDebug($"!Method {nameof(WriteLogs)} has been called.");
+            _logger.LogDebug("Method {MethodName} has been called.", nameof(WriteLogs));
 
-            _logger.LogWarning($"!CPU level: {80}, MemoryUsage: {200}");
-            _logger.LogWarning("CPU level: {CPULevel}, MemoryUsage: {MemoryUsage}", 80, 200);
+            _logger.LogDebug($"!CPU level: {80}, MemoryUsage: {200}");
+            _logger.LogDebug("CPU level: {CPULevel}, MemoryUsage: {MemoryUsage}", 80, 200);
 
-            using (_logger.BeginScope(new OperationScope
+            using (_logger.BeginScope(
+                new Dictionary<string, object>
+                {
+                    ["OperationName"] = "Complex Operation",
+                    ["CorrelationId"] = Guid.NewGuid()
+                }))
             {
-                OperationName = "Complex Operation",
-                CorrelationId = Guid.NewGuid().ToString()
-            }))
-            {
-                _logger.LogWarning("Operation started.");
-                _logger.LogWarning("Operation completed.");
+                _logger.LogDebug("Operation started.");
+                _logger.LogDebug("Operation completed.");
             }
 
-            _logger.LogError(new NotImplementedException(), "Something went wrong!");
+            _logger.LogError(new InvalidOperationException("Something is in a bad state"), "Something went wrong!");
 
             return Ok();
         }
-    }
-
-    public class OperationScope
-    {
-        public string CorrelationId { get; set; }
-
-        public string OperationName { get; set; }
     }
 }
