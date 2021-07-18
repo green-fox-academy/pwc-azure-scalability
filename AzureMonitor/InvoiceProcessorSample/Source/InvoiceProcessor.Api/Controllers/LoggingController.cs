@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -28,6 +29,17 @@ namespace InvoiceProcessor.Api.Controllers
 
             _logger.LogWarning($"!CPU level: {80}, MemoryUsage: {200}");
             _logger.LogWarning("CPU level: {CPULevel}, MemoryUsage: {MemoryUsage}", 80, 200);
+
+            using (_logger.BeginScope(
+                        new Dictionary<string, string>()
+                        {
+                            { "CorrelationId", Guid.NewGuid().ToString() },
+                            { "OperationName", "SuperComplexCalculation" }
+                        }))
+            {
+                _logger.LogWarning("Operation started.");
+                _logger.LogWarning("Operation completed.");
+            }
 
             _logger.LogError(new NotImplementedException(), "Something went wrong!");
 
