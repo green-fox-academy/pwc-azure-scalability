@@ -26,7 +26,7 @@ namespace InvoiceProcessor.Api
 
             services.AddAzureClients(builder =>
             {
-                builder.AddBlobServiceClient(Configuration.GetConnectionString("AzureStorageConnectionString"));
+                builder.AddBlobServiceClient(Configuration["AzureStorageConnectionString"]);
             });
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
         }

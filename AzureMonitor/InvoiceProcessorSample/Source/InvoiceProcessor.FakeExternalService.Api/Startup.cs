@@ -28,9 +28,9 @@ namespace InvoiceProcessor.FakeExternalService.Api
             services.AddSwaggerGen();
             services.AddAzureClients(builder =>
             {
-                var storageConnectionString = Configuration.GetConnectionString("AzureStorageConnectionString");
-                builder.AddTableServiceClient(storageConnectionString);
+                builder.AddTableServiceClient(Configuration["AzureStorageConnectionString"]);
             });
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
