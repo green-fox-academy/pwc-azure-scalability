@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
 namespace InvoiceProcessor.Api.Controllers
 {
     [ApiController]
@@ -101,3 +101,4 @@ namespace InvoiceProcessor.Api.Controllers
         }
     }
 }
+#pragma warning restore CA2000 // Dispose objects before losing scope
