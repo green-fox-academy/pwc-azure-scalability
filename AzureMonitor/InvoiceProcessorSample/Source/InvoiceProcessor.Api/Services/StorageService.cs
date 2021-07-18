@@ -20,7 +20,7 @@ namespace InvoiceProcessor.Api.Services
 
         public StorageService(ILogger<StorageService> logger, IConfiguration configuration)
         {
-            _azureStorageConnectionString = configuration.GetConnectionString("AzureStorageConnectionString");
+            _azureStorageConnectionString = configuration["AzureStorageConnectionString"];
             _logger = logger;
         }
 
