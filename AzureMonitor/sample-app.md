@@ -37,3 +37,56 @@
 ### External.Api (NAV)
 - postInvoices
 - getInvoiceStatus
+
+
+## Tasks
+API Manager
+
+InvoiceProcessor Sample
+
+Tracing
+  Basic tracing sample endpoint
+    TelemetryCLient API
+	Activity	https://tsuyoshiushio.medium.com/correlation-with-activity-with-application-insights-1-overview-753a48a645fb
+    
+  Add trace info to blob
+  Restore trace info from blob metadata in Azure function
+  
+  View timeline view
+  
+  Application map
+  
+Debugging
+  Attach remote
+  Snapshot debugging
+  
+Logging
+  Guidelines
+  
+  Basic logging sample endpoint
+  
+  LogAnalytics
+  
+Metrics
+  Basics
+  
+  Built in metrics
+    Blob
+	Web app
+	Azure function
+	
+  Custom metric
+  
+  Alerting
+  
+  Auto scale
+    Scheduled scaling for web app
+	
+Azure Dashboard / Workbook
+
+PWC Sample
+
+  
+    
+  
+ 
